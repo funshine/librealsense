@@ -364,10 +364,10 @@ int main(int argc, const char** argv) try
             device_names, *device_models, viewer_model, error_message);
 
         auto output_height = viewer_model.get_output_height();
-
+        auto result_width = viewer_model.panel_width;
         rect viewer_rect = { viewer_model.panel_width,
                              viewer_model.panel_y, window.width() -
-                             viewer_model.panel_width,
+                             viewer_model.panel_width - result_width,
                              window.height() - viewer_model.panel_y - output_height };
 
         // Flags for pop-up window - no window resize, move or collaps
@@ -699,6 +699,23 @@ int main(int argc, const char** argv) try
 
             viewer_model.show_no_device_overlay(window.get_large_font(), 50, static_cast<int>(viewer_model.panel_y + 50));
         }
+
+        ImGui::End();
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();
+
+        // Set window position and size
+        ImGui::SetNextWindowPos({ window.width() - result_width, viewer_model.panel_y });
+        ImGui::SetNextWindowSize({ result_width, window.height() - viewer_model.panel_y - output_height });
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, dark_grey);
+        ImGui::Begin("Result Panel", nullptr, flags | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+        
+        ImGui::PushFont(window.get_large_font());
+
+        ImGui::Text("Result:");
+
+        ImGui::PopFont();
 
         ImGui::End();
         ImGui::PopStyleVar();
